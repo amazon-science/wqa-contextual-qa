@@ -133,10 +133,10 @@ dataloader = DataLoader(
 Coala defines several **models** for AS2 based on Transformer architecture. These models can be imported from `coala.models`, and they are summarized in the following table.
 
 | Model Class | Description | Encoded text |
-| :---- | :---------- | :-------: | :-------|
+| :---------- | :---------- | :-------: |
 | `BaseModelForAS2` | The simple model that encodes q/a pairs without context | *[CLS] question [SEP] answer* | 
-| `LocalModelForAS2`| An extended model encoding the surrounding sentences of a candidate answer | *[CLS] question [SEP] previous [SEP] answer [SEP] successive* |
-| `LocalOrdModelForAS2`| A model with re-ordered local context. Suitable for low-resource scenarios | *[CLS] question [SEP] answer [SEP] previous [SEP] successive* |
+| `LocalModelForAS2` | An extended model encoding the surrounding sentences of a candidate answer | *[CLS] question [SEP] previous [SEP] answer [SEP] successive* |
+| `LocalOrdModelForAS2` | A model with re-ordered local context. Suitable for low-resource scenarios | *[CLS] question [SEP] answer [SEP] previous [SEP] successive* |
 
 The simplest way to use a Contextual AS2 model is starting from pre-trained public checkpoints from HuggingFace
 
