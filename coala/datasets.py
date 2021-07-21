@@ -58,7 +58,7 @@ class AS2Dataset(Dataset):
             label = example['input_ids']
             example['input_ids'] = torch.tensor([iid if random.uniform(0.0, 1.0) > self.p_mask else self.tokenizer.mask_token_id for iid in example['input_ids']])
         else:
-            raise InputError('Task label do not recognized. Possible values: as2 or mlm')
+            raise ValueError('Task label do not recognized. Possible values: as2 or mlm')
         return example, label
 
     def tokenize_segment(self, segment, max_length):
@@ -153,47 +153,4 @@ class AS2LocalOrdDataset(AS2Dataset):
             'token_type_ids' : torch.tensor([0] * (len(ids_q)+1) + [1] * (len(ids_a)+1) + [2] * (len(ids_p)+1) + [3] * (len(ids_s)+1)),
             'attention_mask' : torch.tensor([1] * (len(ids_q)+len(ids_a)+len(ids_p)+len(ids_s)+4)),
             'position_ids'   : torch.arange(len(ids_q) + len(ids_a) + len(ids_p) + len(ids_s) + 4),
-        }
-
-
-class AS2PositionalDataset(AS2Dataset):
-    '''
-       This class defines the AS2 dataset with local ordered context and improved positional embedding
-       The structure is similar to local ordered context, but each segment has its own positional embeddings
-       Also, we introduce the title of the document containing the answer as a global context
-       The priority order to fill the 512 tokens is:
-         question > answer > prev > successive > title
-    '''
-
-    def __init__(self,
-                 data,
-                 tokenizer,
-                 max_seq_len = 256,
-                 device      = 'cpu',
-                 task_label  = 'as2', #as2 or mlm
-                 p_mask      = 0.15,
-                 **kwargs,
-    ):
-        super().__init__(data, tokenizer, max_seq_len=max_seq_len, device=device, task_label=task_label, **kwargs)
-
-        self.pos_question   = list(range(0,48))
-        self.pos_current    = list(range(48,176))
-        self.pos_previous   = list(range(176,288))
-        self.pos_successive = list(range(288,400))
-        self.pos_title      = list(range(400,512))
-
-
-    def encode_example(self, row):
-        l = self.max_seq_len - 5
-        ids_q = self.tokenize_segment(row['question'],   min(l, len(self.pos_question)-1))
-        ids_a = self.tokenize_segment(row['answer'],     min(l - len(ids_q), len(self.pos_current)-1))
-        ids_p = self.tokenize_segment(row['previous'],   min(l - len(ids_q) - len(ids_a), len(self.pos_previous)-1))
-        ids_s = self.tokenize_segment(row['successive'], min(l - len(ids_q) - len(ids_a) - len(ids_p), len(self.pos_successive)-1))
-        ids_t = self.tokenize_segment(row['title'],      min(l - len(ids_q) - len(ids_a) - len(ids_p) - len(ids_s), len(self.pos_title)-1))
-
-        return {
-            'input_ids'      : torch.tensor([self.cls] + ids_q + [self.sep] + ids_a + [self.sep] + ids_p + [self.sep] + ids_s + [self.sep] + ids_t),
-            'token_type_ids' : torch.tensor([0] * (len(ids_q)+1) + [1] * (len(ids_a)+1) + [2] * (len(ids_p)+1) + [3] * (len(ids_s)+1) + [4] * (len(ids_t)+1)),
-            'attention_mask' : torch.tensor([1] * (len(ids_q)+len(ids_a)+len(ids_p)+len(ids_s)+len(ids_t)+5)),
-            'position_ids'   : torch.tensor(self.pos_question[:len(ids_q)+1] + self.pos_current[:len(ids_a)+1] + self.pos_previous[:len(ids_p)+1] + self.pos_successive[:len(ids_s)+1] + self.pos_title[:len(ids_t)+1]),
         }

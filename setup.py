@@ -20,6 +20,8 @@ setup(
     install_requires=['nltk',
                       'numpy',
                       'transformers==3.5',
+                      'sklearn',
+                      'pandas',
                       ],
 
     classifiers=[
@@ -30,3 +32,10 @@ setup(
         'Programming Language :: Python :: 3',
     ],
 )
+
+import os
+import contextlib
+import nltk
+with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+    nltk.download('punkt')
+

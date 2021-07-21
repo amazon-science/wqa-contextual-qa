@@ -89,31 +89,4 @@ class LocalOrdModelForAS2(LocalModelForAS2):
     pass
 
 
-class PositionalModelForAS2(LocalModelForAS2):
-    type_vocab_size = 5
 
-
-
-
-### Experimental TODO
-class BowModelForAS2(nn.Module):
-    def __init__(self, pretrained_huggingface_model_name):
-        super().__init__(pretrained_huggingface_model_name_or_path)
-
-        self.dense   = nn.Linear(self.transformer.config.hidden_size, self.transformer.config.hidden_size) 
-        self.dropout = nn.Dropout(0.1)
-        self.out_proj= nn.Linear(self.transformer.config.hidden_size, 2) 
-
-        
-    def forward(self, bow, **kwargs):
-        x1 = self.base(**kwargs)
-        x1 = x1[0][:,0,:]
-        x = torch.cat((x1,bow), dim=1)
-        
-        x = self.dropout(x)
-        x = self.dense(x)
-        x = torch.tanh(x)
-        x = self.dropout(x)
-        x = self.out_proj(x)
-        return (x,)
-        

@@ -13,7 +13,7 @@ import argparse, os
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--model',         default='bert-base',      help='model name or path')
 parser.add_argument('-x', '--context',       default='base',           help='context type',
-                    choices=['base','local', 'local-ord', 'positional'])
+                    choices=['base','local', 'local-ord'])
 parser.add_argument('-c', '--cuda',          default=-2,   type=int,   help='assigned gpu id, -1 means all, -2 means CPU')
 parser.add_argument('-t', '--training',      required=True,            help='training data file')
 parser.add_argument('-v', '--validation',    required=False,           help='validation data file')

@@ -1,3 +1,5 @@
 nltk
 transformers==3.5
-numpy
+torch
+sklearn
+pandas

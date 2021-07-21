@@ -13,7 +13,7 @@ import argparse, os
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--model',         default='roberta-base',   help='model path')
 parser.add_argument('-x', '--context',       default='base',           help='context type',
-                    choices=['base','local', 'local-ord', 'positional'])
+                    choices=['base','local', 'local-ord'])
 parser.add_argument('-c', '--cuda',          default=-2,   type=int,   help='assigned gpu id, -1 means all, -2 means CPU')
 parser.add_argument('-t', '--test',          required=True,            help='test data file')
 parser.add_argument('-w', '--workers',       default=0,    type=int,   help='num threads for data generation')
@@ -72,4 +72,4 @@ logger.info('Evaluation report:')
 logger.info('  ' + ', '.join('%s:%d' % (k,v) if type(v)==int else '%s:%.4f' % (k,v) for k,v in results.items()))
 
 from coala.evaluation import precision_curve
-pre,cov, thr = precision_curve(labels, scores, questions)
+pre, cov, thr = precision_curve(labels, scores, questions)

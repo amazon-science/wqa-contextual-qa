@@ -61,7 +61,7 @@ def precision_at_k(scores, labels, k, pos_label=None):
     return sum([1. if l==pos_label else 0 for l in labels[:k]]) / k
 
 
-def precision_curve(labels, scores, questions, title='Precision curve'):
+def precision_curve(labels, scores, questions):
     dict_questions = dict()
     for question, label, score in zip(questions, labels, scores):
         if question not in dict_questions or dict_questions[question]['score'] < score:
@@ -71,24 +71,12 @@ def precision_curve(labels, scores, questions, title='Precision curve'):
     m_scores = [v['score'] for k,v in dict_questions.items()]
     m_scores, m_labels = (list(t)[::-1] for t in zip(*sorted(zip(m_scores, m_labels))))
     
-    precision, coverage = [], []
+    precision, answer_rate = [], []
     pos = 0
     for i, s, l in zip(range(1,len(m_labels)+1), m_scores, m_labels):
         pos += l
         precision.append(pos*1./i)
-        coverage.append(i/len(m_labels))
+        answer_rate.append(i/len(m_labels))
     thresholds = m_scores
-    
-    try:
-        from matplotlib import pyplot as plt
-        plt.plot(coverage, precision)
-        plt.xlabel('recall')
-        plt.ylabel('coverage')
-        plt.title(title)
-        plt.show()
-    except ImportError:
-        from .utils import get_logger
-        logger = get_logger()
-        logger.error('Matplotlib is not available here')
 
-    return precision, coverage, thresholds
+    return precision, answer_rate, thresholds

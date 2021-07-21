@@ -55,9 +55,9 @@ class AS2Trainer():
 
         self.logger.info('Start training with %d examples' % (len(dataloader.dataset)))
         self.logger.info('Configuration:')
-        self.logger.info('  batch size: %d' % dataloader.batch_size)
-        self.logger.info('  max epochs: %d' % self.epochs)
-        self.logger.info('  val metric: %s' % self.val_metric)
+        self.logger.info('    batch size: %d' % dataloader.batch_size)
+        self.logger.info('    max epochs: %d' % self.epochs)
+        self.logger.info('    val metric: %s' % self.val_metric)
         if self.save_path:
             self.logger.info('The trained model will be stored in: \'%s\'' % (self.save_path))
         if dataloader_va:

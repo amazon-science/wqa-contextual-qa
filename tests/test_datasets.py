@@ -12,8 +12,8 @@ import torch
 from torch.utils.data import DataLoader
 from transformers import AutoTokenizer
 
-from coala.datasets import AS2BaseDataset, AS2LocalDataset, AS2LocalOrdDataset, AS2PositionalDataset
-from coala.models import BaseModelForAS2, LocalModelForAS2, LocalOrdModelForAS2, PositionalModelForAS2
+from coala.datasets import AS2BaseDataset, AS2LocalDataset, AS2LocalOrdDataset
+from coala.models import BaseModelForAS2, LocalModelForAS2, LocalOrdModelForAS2
 from coala.utils import get_batch_padding_as2
 
 
@@ -103,16 +103,6 @@ class TestLocalOrdDataset(TestLocalDataset):
         model = self.baseModel('bert-base-uncased')
         tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
         dataset = self.baseClass(self.data, tokenizer, max_seq_len=512)
-        self.assertEqual(dataset[1][0]['position_ids'].bincount()[2], 1) #empty prev 
-
-
-class TestPositionalDataset(TestLocalDataset):
-    baseClass = AS2PositionalDataset
-    baseModel = PositionalModelForAS2
-    tt_size = 5
-
-    def	test_encoding(self):
-        model = self.baseModel('bert-base-uncased')
-        tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
-        dataset = self.baseClass(self.data, tokenizer, max_seq_len=512)
+        self.assertEqual(dataset[1][0]['position_ids'].bincount()[2], 1) #empty prev
         self.assertEqual(dataset[0][0]['position_ids'].bincount()[4], 1) #empty title
+

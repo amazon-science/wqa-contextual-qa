@@ -1,0 +1,4 @@
+question,answer,previous,successive,title,doc_id,label
+who is Pippo Franco?,this is a random sentence,this is a random previous sentence,this is a random successive sentence,,"a0001",0
+who is Pippo Franco?,Pippo Franco is an Italian actor,,He was born in Rome',Hello! I am a title!,"a0002",1
+Is this another question?,"yes, it is",and this is a previous sentence,and this is a successive sentence,This is the coolest title,"a0003",1

@@ -31,17 +31,15 @@ def dispatcher(context):
         return (models.LocalModelForAS2, datasets.AS2LocalDataset)
     elif context == 'local-ord':
         return (models.LocalOrdModelForAS2, datasets.AS2LocalOrdDataset)
-    elif context == 'positional':
-        return (models.PositionalModelForAS2, datasets.AS2PositionalDataset)
     else:
-        raise InputError('Context type not recognized')
+        raise ValueError('Context type not recognized')
 
 
 
 def single_label_encoder(y, positive={1}):
     '''binary one-hot encoding for a single label
-       Y       : the labels vector
-       positive: the set of positive classes
+       Y       : the label
+       positive: the set of positive class values
     '''
     return 1 if int(y) in positive else 0
 

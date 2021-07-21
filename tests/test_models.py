@@ -14,7 +14,7 @@ import torch
 import os
 import shutil
 
-from coala.models import BaseModelForAS2, LocalModelForAS2, LocalOrdModelForAS2, PositionalModelForAS2
+from coala.models import BaseModelForAS2, LocalModelForAS2, LocalOrdModelForAS2
 from transformers import AutoModelForSequenceClassification
 
 
@@ -76,12 +76,6 @@ class TestLocalOrdModel(TestLocalModel):
         self.baseClass = LocalOrdModelForAS2
         self.tt_size = 4
 
-
-class TestPositionalModel(TestLocalModel):
-
-    def setUp(self):
-        self.baseClass = PositionalModelForAS2
-        self.tt_size = 5
 
 
 if __name__ == '__main__':

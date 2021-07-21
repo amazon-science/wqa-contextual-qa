@@ -88,10 +88,10 @@ We consider input observations as a list of dictionaries with fields:
 | `doc_id`| an univoke index of the document | no | 32531672372
 | `label` | the output class, 1 good answer 0 else |  yes | 1 
 
-If your dataset is stored in a `csv` or `tsv` file with the columns described in the previous table, you can simply read it 
+If your dataset is stored in a `csv` file with the columns described in the previous table, you can simply read it 
 
 ```
-from coala.loaders import read_dataset
+from coala.loader import read_dataset
 data = read_dataset(path_to_my_file)
 ```
 
@@ -214,10 +214,10 @@ We can also print a simple precision-coverage curve
 
 ```
 from coala.evaluation import precision_curve
-tpr = precision_curve(labels, predictions, questions)
+precision, ans_rate, thresholds = precision_curve(labels, predictions, questions)
 ```
 
-The function `precision_curve ` prints the curve (by means of `matplotlib` if it is installed) and it returns the points of the curve as triplets with values precision-coverage-threshold.
+The function `precision_curve ` returns the points of the precision/answer-rate curve as triplets with values precision-answerrate-threshold.
 
 
 
