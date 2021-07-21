@@ -13,7 +13,7 @@ In our contextual AS2 task, we provide models that leverage *contextual* informa
 If you need further information, you can see our recent papers [1,2].
 
 
-- [1] Ivano Lauriola and Alessandro Moschitti: *"[Answer sentence selection using local and global context in transformer models](Answer sentence selection using local and global context in transformer models)"*, ECIR 2021.
+- [1] Ivano Lauriola and Alessandro Moschitti: *"[Answer sentence selection using local and global context in transformer models](https://www.amazon.science/publications/answer-sentence-selection-using-local-and-global-context-in-transformer-models)"*, ECIR 2021.
 - [2] Rujun Han, Luca Soldaini, and Alessandro Moschitti: *"[Modeling Context in Answer Sentence Selection Systems on a Latency Budget](https://www.amazon.science/publications/modeling-context-in-answer-sentence-selection-systems-on-a-latency-budget)"*, EACL 2021.
 
 This code requires `torch 1.7` and `transformers 3.5`
