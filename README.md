@@ -17,7 +17,7 @@ If you need further information, you can see our recent papers [1,2].
 This code requires `torch 1.7` and `transformers 3.5`
 
 
-##Cite
+## Cite
 
 If you use this code for scientific research, please cite the following paper:
 
@@ -32,12 +32,12 @@ If you use this code for scientific research, please cite the following paper:
 
 
 
-##Introduction & main use cases
+## Introduction & main use cases
 
 In the following we show the main use cases of this library. You can find additional examples in the `examples` folder.
 
 
-###Data
+### Data
 
 
 Let's start from **data**.
@@ -127,7 +127,7 @@ dataloader = DataLoader(
 
 
 
-###Models
+### Models
 
 
 Coala defines several **models** for AS2 based on Transformer architecture. These models can be imported from `coala.models`, and they are summarized in the following table.
@@ -180,7 +180,7 @@ If you specified the parameter `save_path`, you should find a `pt` file in that 
 
 
 
-###Evaluation 
+### Evaluation 
 
 After training, you can simply load a fine-tuned contextual model with:
 
@@ -220,7 +220,7 @@ The function `precision_curve ` prints the curve (by means of `matplotlib` if it
 
 
 
-##Work in progress
+## Work in progress
 The content of this library represents a small portion of the current research in contextual AS2. 
 
 In the near future, we will add additional modules to cover different types of contexts (including global contexts). 
