@@ -67,7 +67,7 @@ class ModelForAS2(nn.Module):
         torch.save(self, out_path)
 
         
-    def to_huggingface():
+    def to_huggingface(self):
         '''convert the model to huggingface transformers'''
         return self.transformer
 
