@@ -12,6 +12,7 @@ import torch
 import argparse, os
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--model',         default='roberta-base',   help='model path')
+parser.add_argument('-tok', '--tokenizer',   default=None,              help='tokenizer name or path (optional)')
 parser.add_argument('-x', '--context',       default='base',           help='context type',
                     choices=['base','local', 'local-ord'])
 parser.add_argument('-c', '--cuda',          default=-2,   type=int,   help='assigned gpu id, -1 means all, -2 means CPU')
@@ -37,8 +38,9 @@ model = model_class(args.model)
 model_name = model.transformer.config._name_or_path #e.g. roberta-base, bert-base-uncased
 
 from transformers import AutoTokenizer
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-logger.info('Using %s tokenizer' % model_name) 
+tokenizer_name_or_path = args.tokenizer or model_name
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path)
+logger.info('Using %s tokenizer' % tokenizer_name_or_path)
 
 device = torch.device('cpu' if args.cuda==-2 else 'cuda')
 if args.cuda >=0:
@@ -69,7 +71,7 @@ questions = dataset_te.questions
 from coala.evaluation import report
 results = report(labels, scores, questions)
 logger.info('Evaluation report:')
-logger.info('  ' + ', '.join('%s:%d' % (k,v) if type(v)==int else '%s:%.4f' % (k,v) for k,v in results.items()))
+logger.info('    ' + ', '.join('%s:%d' % (k,v) if type(v)==int else '%s:%.4f' % (k,v) for k,v in results.items()))
 
 from coala.evaluation import precision_curve
 pre, cov, thr = precision_curve(labels, scores, questions)

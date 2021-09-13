@@ -38,6 +38,8 @@ class ModelForAS2(nn.Module):
                 
             if checkpoint.config.architectures[0].endswith('ForMaskedLM'):
                 logger.warning('The loaded model is converted from MLM to sequence classification. The classification head has to be fine-tuned')
+                print (checkpoint)
+                print (checkpoint.config)
                 as2model = AutoModelForSequenceClassification.from_pretrained(checkpoint.config._name_or_path)
                 as2encoder = getattr(as2model, checkpoint.config.model_type)
                 as2encoder.embeddings = checkpoint.embeddings
@@ -67,7 +69,7 @@ class ModelForAS2(nn.Module):
         torch.save(self, out_path)
 
         
-    def to_huggingface():
+    def to_huggingface(self):
         '''convert the model to huggingface transformers'''
         return self.transformer
 

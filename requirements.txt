@@ -1,5 +1,5 @@
 nltk
 transformers==3.5
-torch
+torch==1.7
 sklearn
 pandas

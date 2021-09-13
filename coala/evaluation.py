@@ -10,7 +10,8 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 
-def report(labels, scores, questions):
+
+def report(labels, scores, questions, return_metadata=True):
     '''computes various statistics and metrics'''
     results = {}
     if len(np.unique(labels)) == 2:
@@ -19,49 +20,59 @@ def report(labels, scores, questions):
     for label, score, q in zip(labels, scores, questions):
         dict_questions[q]['labels'].append(label)
         dict_questions[q]['scores'].append(score)
-    results['p@1'] = np.mean([precision_at_k(v['scores'], v['labels'], 1, 1) for v in dict_questions.values()])
-    results['map'] = np.mean([average_precision(v['scores'], v['labels'], 1) for v in dict_questions.values()])
-    results['questions'] = len(dict_questions)
-    results['examples']  = len(labels)
+    results['P@1'] = np.mean([precision_at_k(v['labels'], v['scores'], 1) for v in dict_questions.values()])
+    results['MAP'] = np.mean([average_precision(v['labels'], v['scores']) for v in dict_questions.values()])
+    results['MRR'] = np.mean([reciprocal_rank(v['labels'], v['scores']) for v in dict_questions.values()])
+    results['HIT@3'] = np.mean([hit_at_k(v['labels'], v['scores'], 3) for v in dict_questions.values()])
+    results['HIT@5'] = np.mean([hit_at_k(v['labels'], v['scores'], 5) for v in dict_questions.values()])
+    results['AUPC'] = area_under_precision_curve(labels, scores, questions)
+    if return_metadata:
+        results['questions'] = len(dict_questions)
+        results['examples']  = len(labels)
     return results
 
 
-def reciprocal_rank(scores, labels, pos_label=None):
-    '''reciprocal rank given a query'''
-    pos_label = pos_label or max(labels)
-    scores, labels = zip(*sorted(zip(scores, labels),reverse=True))
-    n = len(scores)
 
-    return 1./(labels.index(1)+1)
-    #return sum([1./i for i in range(n) if labels[i] == pos_label])
+### ranking metrics for single question (question + all candidates)
 
-
-def average_precision(scores, labels, pos_label=None):
-    '''average precision given a query'''
-    pos_label = pos_label or max(labels)
+def precision_at_k(labels, scores, k, pos_label=1):
+    '''precision at k given a question'''
     scores, labels = zip(*sorted(zip(scores, labels),reverse=True))
     n =len(scores)
+    n_pos = labels[:k].count(pos_label)
+    return 0 if not n_pos else n_pos / k
 
+
+def hit_at_k(labels, scores, k, pos_label=1):
+    '''hit at k given a question'''
+    scores, labels = zip(*sorted(zip(scores, labels),reverse=True))
+    return int(pos_label in labels[:k])
+
+
+def average_precision(labels, scores, pos_label=1):
+    '''average precision given a question'''
+    scores, labels = zip(*sorted(zip(scores, labels),reverse=True))
+    n =len(scores)
     n_pos = labels.count(pos_label)
     if not n_pos:
-        return 1
-    ap = sum([precision_at_k(scores, labels, i+1, pos_label) if labels[i]==pos_label else 0 for i in range(n)]) / n_pos
-    #print (labels, n_pos, ap, [precision_at_k(scores, labels, i+1, pos_label) for i in range(6)])
+        return 0
+    ap = sum([precision_at_k(labels, scores, i+1, pos_label) if labels[i]==pos_label else 0 for i in range(n)]) / n_pos
     return ap
 
-def precision_at_k(scores, labels, k, pos_label=None):
-    '''precision at k'''
-    pos_label = pos_label or max(labels)
+
+def reciprocal_rank(labels, scores, pos_label=1):
+    '''reciprocal rank given a question'''
     scores, labels = zip(*sorted(zip(scores, labels),reverse=True))
-    n =len(scores)
-    
-    n_pos = labels[:k].count(pos_label)
-    if not n_pos:
-        return 0.
-    return sum([1. if l==pos_label else 0 for l in labels[:k]]) / k
+    return 1./(labels.index(pos_label)+1) if pos_label in labels else 0
 
 
-def precision_curve(labels, scores, questions):
+
+
+
+
+### global metrics (that involve all questions)
+
+def precision_curve(labels, scores, questions, pos_label=1):
     dict_questions = dict()
     for question, label, score in zip(questions, labels, scores):
         if question not in dict_questions or dict_questions[question]['score'] < score:
@@ -74,9 +85,14 @@ def precision_curve(labels, scores, questions):
     precision, answer_rate = [], []
     pos = 0
     for i, s, l in zip(range(1,len(m_labels)+1), m_scores, m_labels):
-        pos += l
+        pos += l==pos_label
         precision.append(pos*1./i)
         answer_rate.append(i/len(m_labels))
     thresholds = m_scores
 
     return precision, answer_rate, thresholds
+
+
+def area_under_precision_curve(labels, scores, questions, pos_label=1):
+    precision, answer_rate, thresholds = precision_curve(labels, scores, questions, pos_label=pos_label)
+    return sum(precision) / len(precision)

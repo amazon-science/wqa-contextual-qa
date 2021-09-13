@@ -10,7 +10,7 @@ from setuptools import setup
 
 setup(
     name='coala',
-    version='0.1',
+    version='0.1.1',
     description='Coala: a python package for Contextual Answer Sentence Selection (Passage Reranking)',
     url='',
     author='Lauriola Ivano',

@@ -66,12 +66,3 @@ class TestLocalOrdPipeline(TestLocalPipeline):
     baseDataset = AS2LocalOrdDataset
     tt_size = 4
 
-    def	test_precision(self):
-        labels = [1,1,0,0,0,0]
-        scores = [.9, .7, .5, .4, .8, .3]
-        questions = ['a','b','c','c','d','d']
-        pre, cov, thr =	precision_curve(labels, scores, questions)
-        self.assertListEqual(pre, [1, 0.5, 2/3, 0.5])
-        self.assertListEqual(cov, [.25, .5, .75, 1])
-        self.assertListEqual(thr, [.9, .8, .7, .5])
-

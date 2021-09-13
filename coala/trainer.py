@@ -27,12 +27,13 @@ class AS2Trainer():
             epochs    = 3,
             patience  = 2,
             loss_fct  = nn.CrossEntropyLoss(),
-            val_metric= 'p@1', #p@1, roc_auc, val_loss
+            val_metric= 'P@1', #p@1, roc_auc, val_loss
             debug     = False,
             save_path = None,
             device    = 'cpu',
     ):
-        assert val_metric in ['p@1','roc_auc','loss', 'val_loss'], 'Evaluation Metric not recognized: %s' % val_metric
+        assert val_metric in ['loss','val_loss','roc_auc','P@1','MAP','MRR','HIT@5','AUPC'], \
+            'Evaluation Metric not recognized: %s' % val_metric
         self.logger = utils.get_logger(debug)
 
         self.model     = model
@@ -47,7 +48,7 @@ class AS2Trainer():
         self.device    = device
 
         
-    def fit(self, dataloader, dataloader_va):
+    def fit(self, dataloader, dataloader_va, dataloaders_eval=[]):
 
         
         epochs_without_improvement = 0
@@ -63,6 +64,8 @@ class AS2Trainer():
         if dataloader_va:
             self.logger.info('Validation data found (%d examples)' % len(dataloader_va.dataset))
             self.logger.info('The training will end when the %s computed on validation data worsens for %d consecutive epochs' % (self.val_metric, self.patience))
+        if dataloaders_eval:
+            self.logger.info('Evaluation data found (%d examples)' % sum(len(dd.dataset) for dd in dataloaders_eval))
         if self.debug:
             self.logger.debug('THE TRAINER IS RUNNING IN DEBUG MODE!')
 
@@ -104,24 +107,26 @@ class AS2Trainer():
             loss_tr /= len(dataloader)
             
             time_eval = time.time()
-            
-            y_scores, loss_va = self.predict(dataloader_va, return_loss=True)
-            y_true = dataloader_va.dataset.labels[:len(y_scores)]
-            questions_va = dataloader_va.dataset.questions[:len(y_scores)]
-            results = evaluation.report(y_true, y_scores, questions=questions_va)
-            results['tr_loss'] = loss_tr
-            results['val_loss'] = loss_va
+
+            results = []
+            for dloader in [dataloader_va] + dataloaders_eval:
+                y_scores, loss_eval = self.predict(dloader, return_loss=True)
+                y_true = dloader.dataset.labels[:len(y_scores)]
+                questions_eval = dloader.dataset.questions[:len(y_scores)]
+                ds_results = evaluation.report(y_true, y_scores, questions=questions_eval, return_metadata=False)
+                ds_results['loss'] = loss_eval
+                results.append(ds_results)
             time_eval = time.time() - time_eval
                 
-            if self.val_metric in ['p@1', 'roc_auc']:
-                op = lambda x,y: x < y
-            else:
+            if 'loss' in self.val_metric:
                 op = lambda x,y: x > y
+            else:
+                op = lambda x,y: x < y
 
             epochs_without_improvement += 1
             is_saved = ''
-            if not best_metrics or op(best_metrics[self.val_metric], results[self.val_metric]):
-                best_metrics = results
+            if not best_metrics or op(best_metrics[self.val_metric], results[0][self.val_metric]):
+                best_metrics = results[0]
                 epochs_without_improvement = 0
                 if self.save_path:
                     #self.model.save(self.save_path)
@@ -132,10 +137,15 @@ class AS2Trainer():
                     is_saved = ' (saved)'
 
             time_all = time.time() - time_all
-            self.logger.info('Epoch %d - %s: %.4f%s' % (epoch, self.val_metric, results[self.val_metric], is_saved ))
-            report_str = ', '.join('%s:%.4f' % (k,v) for k,v in results.items())
-            self.logger.info('    Evaluation report: %s' % report_str)
-            self.logger.info('    The epoch has been executed in %.1fs, of which %.1fs training and %.1fs evaluation' % (time_all, time_epoch, time_eval))
+            self.logger.info('Epoch %d - %s: %.4f%s' % (epoch, self.val_metric, results[0][self.val_metric], is_saved ))
+            self.logger.info('    Execution time: %.1fs, of which %.1fs training and %.1fs evaluation' % (time_all, time_epoch, time_eval))
+            self.logger.info('    Evaluation report:')
+            self.logger.info('        training set - loss: %.4f, ' % loss_tr)
+            for report_id, report in enumerate(results):
+                report_str = ', '.join('%s:%d' % (k,v) if isinstance(v, int) else '%s:%.4f' % (k,v) for k,v in report.items())
+                eval_set_name = ' ' * 8 + ('validation set - ' if not report_id else ('eval set [#%d] - ' % report_id))
+                self.logger.info(eval_set_name + report_str)
+
             if epochs_without_improvement >= self.patience :
                 self.logger.info ('Early stopping')
                 sys.stdout.flush()
