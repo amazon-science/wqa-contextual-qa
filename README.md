@@ -76,9 +76,11 @@ You should find two files in a folder `data/asnq/`, namely `train.tsv` and `dev.
 Now, you can run the script to add context, that is
 
 ```
-python get_contextual_ASNQ.py <PATH_NQ>/v1.0/dev data/asnq/dev.tsv asnq-dev.csv asnq-dev-docs.json
-python get_contextual_ASNQ.py <PATH_NQ>/v1.0/train data/asnq/train.tsv asnq-train.csv asnq-train-docs.json
+python get_contextual_ASNQ.py <PATH_NQ>/dev data/asnq/dev.tsv asnq-dev-ctx.csv asnq-dev-docs.json
+python get_contextual_ASNQ.py <PATH_NQ>/train data/asnq/train.tsv asnq-train-ctx.csv asnq-train-docs.json
 ```
+
+where `asnq-[train/dev]-ctx.csv` will be the contextual version of ASNQ, and `asnq-[train/dev]-docs.json` will contain the list of full documents.
 
 
 We consider input observations as a list of dictionaries with fields:
