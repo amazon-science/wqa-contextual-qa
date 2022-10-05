@@ -68,7 +68,7 @@ Firstly, download the raw `NQ` dataset [here](https://ai.google.com/research/Nat
 Then, download `ASNQ`, a version of `NQ` designed for AS2
 
 ```
-https://wqa-public.s3.amazonaws.com/tanda-aaai-2020/data/asnq.tar
+https://d3t7erp6ge410c.cloudfront.net/tanda-aaai-2020/data/asnq.tar
 tar -xvf asnq.tar
 ```
 
