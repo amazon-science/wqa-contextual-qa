@@ -72,7 +72,7 @@ https://d3t7erp6ge410c.cloudfront.net/tanda-aaai-2020/data/asnq.tar
 tar -xvf asnq.tar
 ```
 
-You should find two files in a folder `data/asnq/`, namely `train.tsv` and `test.tsv`
+You should find two files in a folder `data/asnq/`, namely `train.tsv` and `dev.tsv`
 Now, you can run the script to add context, that is
 
 ```
