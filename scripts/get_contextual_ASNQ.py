@@ -62,10 +62,6 @@ for fi in os.listdir(nq_path_v1_split):
             sentences = sent_tokenize(text)                                                                                                                                
             clean_sentences = [clean_from_string(s) for s in sentences]
             nq[question] = {'sentences': sentences, 'clean_sentences': clean_sentences}
-
-            if not (j%20):
-                print (fi,j)
-                sys.stdout.flush()
             del row
 
 
@@ -98,7 +94,7 @@ with open(path_out_candidates, 'w', encoding='utf-8') as ofile:
             'successive': '',
             'title': title,
             'doc_id': doc_id,
-            'label': int(row['label'])
+            'label': 1 if int(row['label']) == 4 else 0,
         }
         positives += processed_row['label'] == 1
 
