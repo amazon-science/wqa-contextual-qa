@@ -19,7 +19,7 @@ setup(
     packages=['coala'],
     install_requires=['nltk',
                       'numpy',
-                      'transformers==3.5',
+                      'transformers==4.30.0',
                       'sklearn',
                       'pandas',
                       ],
